@@ -20,6 +20,9 @@ where
 {
     /// Updates the `RotaryEncoder`, updating the `direction` property
     pub fn update(&mut self) {
+        if self.direction != Direction::None {
+            return;
+        }
         self.mode.pin_state[0] =
             (self.mode.pin_state[0] << 1) | self.pin_dt.is_high().unwrap_or_default() as u8;
         self.mode.pin_state[1] =
@@ -36,6 +39,13 @@ where
             dir = Direction::Clockwise;
         }
         self.direction = dir;
+    }
+
+    /// Return last known state and reset the state
+    pub fn poll(&mut self) -> Direction {
+        let last_direction = self.direction;
+        self.direction = Direction::None;
+        last_direction
     }
 }
 
